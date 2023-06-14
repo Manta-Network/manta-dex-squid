@@ -10,7 +10,7 @@ const DataSelection = { data: { event: true } } as const
 
 const processor = new SubstrateBatchProcessor()
   .setDataSource(config.dataSource)
-  .setBlockRange({ from: 907128 })
+  .setBlockRange({ from: 3778953 })
   .addEvent('Currencies.Transferred', DataSelection)
   .addEvent('Currencies.Deposited', DataSelection)
   .addEvent('Currencies.Withdrawn', DataSelection)

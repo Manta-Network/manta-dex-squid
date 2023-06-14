@@ -3,21 +3,21 @@ import { Big as BigDecimal } from 'big.js'
 import { AssetId } from "./types/v906";
 import { zenlinkAssetIdToCurrencyId } from "./utils/token";
 
-export const CHAIN_NODE = process.env.BIFROST_KUSAMA_CHAIN_NODE || 'wss://bifrost-parachain.api.onfinality.io/public-ws'
+export const CHAIN_NODE = process.env.BIFROST_KUSAMA_CHAIN_NODE || 'wss://calamari.systems'
 
 export const TOKEN_METADATA_MAP: { [address: string]: TokenBase } = {
-  '2001-0-0': { name: 'Bifrost', symbol: 'BNC', decimals: 12 },
-  '2001-2-770': { name: 'Karura Dollar', symbol: 'aUSD', decimals: 12 },
-  '2001-2-516': { name: 'Kusama', symbol: 'KSM', decimals: 12 },
-  '2001-2-519': { name: 'Zenlink Network Token', symbol: 'ZLK', decimals: 18 },
-  '2001-2-518': { name: 'Karura', symbol: 'KAR', decimals: 12 },
-  '2001-2-1028': { name: 'vsKSM', symbol: 'vsKSM', decimals: 12 },
-  '2001-2-521': { name: 'RMRK', symbol: 'RMRK', decimals: 10 },
-  '2001-2-260': { name: 'vKusama', symbol: 'vKSM', decimals: 12 },
-  '2001-2-2048': { name: 'USDT', symbol: 'USDT', decimals: 6 },
+  '2084-0-1': { name: 'Calamari', symbol: 'KMA', decimals: 12 },
+  '2084-2-8': { name: 'Karura Native Token', symbol: 'KAR', decimals: 12 },
+  // '2084-2-516': { name: 'Kusama', symbol: 'KSM', decimals: 12 },
+  // '2084-2-519': { name: 'Zenlink Network Token', symbol: 'ZLK', decimals: 18 },
+  // '2084-2-518': { name: 'Karura', symbol: 'KAR', decimals: 12 },
+  // '2084-2-1028': { name: 'vsKSM', symbol: 'vsKSM', decimals: 12 },
+  // '2084-2-521': { name: 'RMRK', symbol: 'RMRK', decimals: 10 },
+  // '2084-2-260': { name: 'vKusama', symbol: 'vKSM', decimals: 12 },
+  // '2084-2-2048': { name: 'USDT', symbol: 'USDT', decimals: 6 },
 }
 
-export const CHAIN_ID = 2001
+export const CHAIN_ID = 2084
 
 export const ZLK_ASSET_ID: AssetId = {
   chainId: CHAIN_ID,

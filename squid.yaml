@@ -1,8 +1,8 @@
 manifestVersion: subsquid.io/v0.1
-name: zenlink-bifrost-kusama-squid
+name: manta-dex-calamari-squid
 version: 4
 description: |-
-  Zenlink Bifrost(Kusama) Squid
+  Manta DEX calamari Squid
 build:
 
 deploy:
