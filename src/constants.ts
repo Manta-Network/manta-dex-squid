@@ -3,7 +3,7 @@ import { Big as BigDecimal } from 'big.js'
 import { AssetId } from "./types/v906";
 import { zenlinkAssetIdToCurrencyId } from "./utils/token";
 
-export const CHAIN_NODE = process.env.BIFROST_KUSAMA_CHAIN_NODE || 'wss://calamari.systems'
+export const CHAIN_NODE = 'wss://calamari.systems'
 
 export const TOKEN_METADATA_MAP: { [address: string]: TokenBase } = {
   '2084-0-1': { name: 'Calamari', symbol: 'KMA', decimals: 12 },
