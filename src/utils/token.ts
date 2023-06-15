@@ -84,7 +84,8 @@ export const currencyTokenSymbolMap: { [index: number]: string } = {
 export const invertedTokenSymbolMap = invert(currencyTokenSymbolMap)
 
 export function addressFromAsset({ chainId, assetIndex, assetType }: AssetId) {
-  return `${chainId}-${assetType}-${assetIndex.toString()}`
+  const newAssetIndex = [BigInt(0), BigInt(1)].includes(assetIndex) ? BigInt(0) : assetIndex
+  return `${chainId}-${assetType}-${newAssetIndex.toString()}`
 }
 
 export function assetIdFromAddress(address: string): AssetId {
@@ -100,6 +101,15 @@ export function parseTokenType(assetIndex: number): string {
   const assetU8 = (assetIndex & 0x0000_0000_0000_ff00) >> 8
 
   return currencyKeyMap[assetU8]
+}
+
+export function assetIdAdaptZenlink(CHAIN_ID: number, assetId: bigint) {
+  let formattedAssetId: AssetId = {
+    chainId: CHAIN_ID,
+    assetType: [BigInt(0), BigInt(1)].includes(assetId) ? 0 : 2,
+    assetIndex: [BigInt(0), BigInt(1)].includes(assetId) ? BigInt(0) : assetId,
+  }
+  return formattedAssetId
 }
 
 // export function zenlinkAssetIdToCurrencyId(asset: AssetId): any {
@@ -216,7 +226,7 @@ export async function getPairStatusFromAssets(
 
 export async function getTokenBalance(ctx: EventHandlerContext, assetId: bigint, account: Uint8Array) {
   let result
-  if (assetId === BigInt(0)) {
+  if ([BigInt(0), BigInt(1)].includes(assetId)) {
     const systemAccountStorate = new SystemAccountStorage(ctx, ctx.block)
     result = (await systemAccountStorate.asV4100.get(account)).data
     return result?.free

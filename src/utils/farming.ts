@@ -31,6 +31,7 @@ import {
 } from '../types/storage'
 import { convertTokenToDecimal, getTimePerBlock } from './helpers'
 import { sortAssets } from './sort'
+import { assetIdAdaptZenlink } from './token'
 
 export function formatFarmingCreatedPoolEvent(ctx: EventHandlerContext) {
   let event
@@ -218,7 +219,7 @@ export async function updateFarmingPoolInfo(ctx: EventHandlerContext, pid: bigin
       const assetIndex = item[0]
       const token = await getOrCreateToken(ctx, {
         chainId: CHAIN_ID,
-        assetType: assetIndex === BigInt(1) ? 0 : 2,
+        assetType: [BigInt(0), BigInt(1)].includes(assetIndex) ? 0 : 2,
         assetIndex: BigInt(assetIndex),
       })
       if (!token) return
@@ -237,7 +238,7 @@ export async function updateFarmingPoolInfo(ctx: EventHandlerContext, pid: bigin
       const assetIndex = item[0]
       const token = await getOrCreateToken(ctx, {
         chainId: CHAIN_ID,
-        assetType: assetIndex === BigInt(0) ? 0 : 2,
+        assetType: [BigInt(0), BigInt(1)].includes(assetIndex) ? 0 : 2,
         assetIndex: BigInt(assetIndex),
       })
       if (!token) return '0'
@@ -265,8 +266,8 @@ export async function updateFarmingPoolInfo(ctx: EventHandlerContext, pid: bigin
   if (lpToken) {
     const [token0Index, token1Index] = lpToken
 
-    const _asset0 = { chainId: CHAIN_ID, assetType: token0Index === BigInt(1) ? 0 : 2, assetIndex: BigInt(token0Index) }
-    const _asset1 = { chainId: CHAIN_ID, assetType: token1Index === BigInt(1) ? 0 : 2, assetIndex: BigInt(token1Index) }
+    const _asset0 = assetIdAdaptZenlink(CHAIN_ID, token0Index)
+    const _asset1 = assetIdAdaptZenlink(CHAIN_ID, token1Index)
     const [asset0, asset1] = sortAssets([_asset0, _asset1])
     let pair = await getPair(ctx, [asset0, asset1])
     if (pair) {
@@ -311,7 +312,7 @@ export async function updateFarmingPoolInfo(ctx: EventHandlerContext, pid: bigin
 
     const token = await getOrCreateToken(ctx, {
       chainId: CHAIN_ID,
-      assetType: assetIdIndex === BigInt(1) ? 0 : 2,
+      assetType: [BigInt(0), BigInt(1)].includes(assetIdIndex) ? 0 : 2,
       assetIndex: BigInt(assetIdIndex),
     })
 
@@ -428,7 +429,7 @@ export async function killFarmingPoolInfo(ctx: EventHandlerContext, pid: bigint)
       const assetIndex = item[0]
       const token = await getOrCreateToken(ctx, {
         chainId: CHAIN_ID,
-        assetType: assetIndex === BigInt(1) ? 0 : 2,
+        assetType: [BigInt(0), BigInt(1)].includes(assetIndex) ? 0 : 2,
         assetIndex: BigInt(assetIndex),
       })
       if (!token) return
@@ -448,7 +449,7 @@ export async function killFarmingPoolInfo(ctx: EventHandlerContext, pid: bigint)
       const assetIndex = item[0]
       const token = await getOrCreateToken(ctx, {
         chainId: CHAIN_ID,
-        assetType: assetIndex === BigInt(1) ? 0 : 2,
+        assetType: [BigInt(0), BigInt(1)].includes(assetIndex) ? 0 : 2,
         assetIndex: BigInt(assetIndex),
       })
       if (!token) return '0'
@@ -476,8 +477,9 @@ export async function killFarmingPoolInfo(ctx: EventHandlerContext, pid: bigint)
 
   if (lpToken) {
     const [token0Index, token1Index] = lpToken
-    const _asset0 = { chainId: CHAIN_ID, assetType: token0Index === BigInt(1) ? 0 : 2, assetIndex: BigInt(token0Index) }
-    const _asset1 = { chainId: CHAIN_ID, assetType: token1Index === BigInt(1) ? 0 : 2, assetIndex: BigInt(token1Index) }
+
+    const _asset0 = assetIdAdaptZenlink(CHAIN_ID, token0Index)
+    const _asset1 = assetIdAdaptZenlink(CHAIN_ID, token1Index)
     const [asset0, asset1] = sortAssets([_asset0, _asset1])
     let pair = await getPair(ctx, [asset0, asset1])
     if (pair) {
@@ -522,7 +524,7 @@ export async function killFarmingPoolInfo(ctx: EventHandlerContext, pid: bigint)
 
     const token = await getOrCreateToken(ctx, {
       chainId: CHAIN_ID,
-      assetType: assetIdIndex === BigInt(1) ? 0 : 2,
+      assetType: [BigInt(0), BigInt(1)].includes(assetIdIndex) ? 0 : 2,
       assetIndex: BigInt(assetIdIndex),
     })
 

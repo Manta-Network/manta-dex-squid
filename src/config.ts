@@ -5,11 +5,7 @@ export const config: ProcessorConfig = {
   chainName: 'calamari',
   prefix: 'calamari',
   dataSource: {
-    archive: 'http://localhost:4444/graphql',
+    archive: 'http://localhost:8888/graphql',
     chain: CHAIN_NODE,
   },
 }
-
-
-// calamari data <-
-// local    data <-

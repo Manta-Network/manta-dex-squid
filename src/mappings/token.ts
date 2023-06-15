@@ -18,7 +18,7 @@ import {
   User,
 } from '../model'
 import { AssetsBurnedEvent, AssetsIssuedEvent, AssetsTransferredEvent } from '../types/events'
-import { getPairStatusFromAssets, getTokenBalance } from '../utils/token'
+import { assetIdAdaptZenlink, getPairStatusFromAssets, getTokenBalance } from '../utils/token'
 import { AssetManagerLpToAssetIdPairStorage } from '../types/storage'
 
 async function isCompleteMint(ctx: EventHandlerContext, mintId: string): Promise<boolean> {
@@ -41,8 +41,8 @@ export async function handleTokenDeposited(ctx: EventHandlerContext) {
 
   const [token0Index, token1Index] = lpToken
 
-  const asset0 = { chainId: CHAIN_ID, assetType: token0Index === BigInt(1) ? 0 : 2, assetIndex: BigInt(token0Index) }
-  const asset1 = { chainId: CHAIN_ID, assetType: token1Index === BigInt(1) ? 0 : 2, assetIndex: BigInt(token1Index) }
+  const asset0 = assetIdAdaptZenlink(CHAIN_ID, token0Index)
+  const asset1 = assetIdAdaptZenlink(CHAIN_ID, token1Index)
 
   const pair = await getPair(ctx, [asset0, asset1])
   if (!pair) return
@@ -112,8 +112,8 @@ export async function handleTokenWithdrawn(ctx: EventHandlerContext) {
   if (!event || !lpToken) return
 
   const [token0Index, token1Index] = lpToken
-  const asset0 = { chainId: CHAIN_ID, assetType: token0Index === BigInt(1) ? 0 : 2, assetIndex: BigInt(token0Index) }
-  const asset1 = { chainId: CHAIN_ID, assetType: token1Index === BigInt(1) ? 0 : 2, assetIndex: BigInt(token1Index) }
+  const asset0 = assetIdAdaptZenlink(CHAIN_ID, token0Index)
+  const asset1 = assetIdAdaptZenlink(CHAIN_ID, token1Index)
 
   const pair = await getPair(ctx, [asset0, asset1])
   if (!pair) return
@@ -215,8 +215,8 @@ export async function handleTokenTransfer(ctx: EventHandlerContext) {
   if (!event || !lpToken) return
 
   const [token0Index, token1Index] = lpToken
-  const asset0 = { chainId: CHAIN_ID, assetType: token0Index === BigInt(1) ? 0 : 2, assetIndex: BigInt(token0Index) }
-  const asset1 = { chainId: CHAIN_ID, assetType: token1Index === BigInt(1) ? 0 : 2, assetIndex: BigInt(token1Index) }
+  const asset0 = assetIdAdaptZenlink(CHAIN_ID, token0Index)
+  const asset1 = assetIdAdaptZenlink(CHAIN_ID, token1Index)
 
   const pair = await getPair(ctx, [asset0, asset1])
   if (!pair) return

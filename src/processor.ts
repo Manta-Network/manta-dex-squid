@@ -4,13 +4,12 @@ import { config } from "./config"
 import { handleFarmingCharged, handleFarmingClaimed, handleFarmingDeposited, handleFarmingGaugeWithdrawn, handleFarmingPoolClosed, handleFarmingPoolCreated, handleFarmingPoolEdited, handleFarmingPoolKilled, handleFarmingPoolReset, handleFarmingWithdrawClaimed, handleFarmingWithdrawn } from "./mappings/farming/handle"
 import { handleAssetSwap, handleLiquidityAdded, handleLiquidityRemoved } from './mappings/protocol'
 import { handleTokenDeposited, handleTokenTransfer, handleTokenWithdrawn } from "./mappings/token"
-import { TOEKN_EVENT_TYPE } from "./types"
 
 const DataSelection = { data: { event: true } } as const
 
 const processor = new SubstrateBatchProcessor()
   .setDataSource(config.dataSource)
-  .setBlockRange({ from: 1 })
+  .setBlockRange({ from: 0 })
   .addEvent('Assets.Transferred', DataSelection)
   .addEvent('Assets.Issued', DataSelection)
   .addEvent('Assets.Burned', DataSelection)
@@ -34,13 +33,13 @@ const processor = new SubstrateBatchProcessor()
 
 
 
-  .addEvent('Tokens.Transfer', DataSelection)
-  .addEvent('Tokens.Deposited', DataSelection)
-  .addEvent('Tokens.Withdrawn', DataSelection)
+  // .addEvent('Tokens.Transfer', DataSelection)
+  // .addEvent('Tokens.Deposited', DataSelection)
+  // .addEvent('Tokens.Withdrawn', DataSelection)
   .addEvent('ZenlinkProtocol.LiquidityAdded', DataSelection)
   .addEvent('ZenlinkProtocol.LiquidityRemoved', DataSelection)
   .addEvent('ZenlinkProtocol.AssetSwap', DataSelection)
-  .addEvent('Tokens.BalanceSet', DataSelection)
+  // .addEvent('Tokens.BalanceSet', DataSelection)
 
 processor.run(new TypeormDatabase(), async ctx => {
   for (let block of ctx.blocks) {
