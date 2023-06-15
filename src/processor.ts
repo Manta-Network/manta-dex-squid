@@ -2,7 +2,7 @@ import { SubstrateBatchProcessor } from "@subsquid/substrate-processor"
 import { TypeormDatabase } from "@subsquid/typeorm-store"
 import { config } from "./config"
 import { handleFarmingCharged, handleFarmingClaimed, handleFarmingDeposited, handleFarmingGaugeWithdrawn, handleFarmingPoolClosed, handleFarmingPoolCreated, handleFarmingPoolEdited, handleFarmingPoolKilled, handleFarmingPoolReset, handleFarmingWithdrawClaimed, handleFarmingWithdrawn } from "./mappings/farming/handle"
-import { handleAssetSwap, handleLiquidityAdded, handleLiquidityRemoved, handleTokensBalanceSet } from './mappings/protocol'
+import { handleAssetSwap, handleLiquidityAdded, handleLiquidityRemoved } from './mappings/protocol'
 import { handleTokenDeposited, handleTokenTransfer, handleTokenWithdrawn } from "./mappings/token"
 import { TOEKN_EVENT_TYPE } from "./types"
 
@@ -10,10 +10,10 @@ const DataSelection = { data: { event: true } } as const
 
 const processor = new SubstrateBatchProcessor()
   .setDataSource(config.dataSource)
-  .setBlockRange({ from: 3778953 })
-  .addEvent('Currencies.Transferred', DataSelection)
-  .addEvent('Currencies.Deposited', DataSelection)
-  .addEvent('Currencies.Withdrawn', DataSelection)
+  .setBlockRange({ from: 1 })
+  .addEvent('Assets.Transferred', DataSelection)
+  .addEvent('Assets.Issued', DataSelection)
+  .addEvent('Assets.Burned', DataSelection)
   // farming
   .addEvent('Farming.FarmingPoolCreated', DataSelection)
   .addEvent('Farming.FarmingPoolReset', DataSelection)
@@ -46,24 +46,24 @@ processor.run(new TypeormDatabase(), async ctx => {
   for (let block of ctx.blocks) {
     for (let item of block.items) {
       switch (item.name) {
-        case 'Currencies.Deposited':
-          await handleTokenDeposited({ ...ctx, block: block.header, event: item.event }, TOEKN_EVENT_TYPE.Currencies)
+        case 'Assets.Issued':
+          await handleTokenDeposited({ ...ctx, block: block.header, event: item.event })
           break
-        case 'Currencies.Withdrawn':
-          await handleTokenWithdrawn({ ...ctx, block: block.header, event: item.event }, TOEKN_EVENT_TYPE.Currencies)
+        case 'Assets.Burned':
+          await handleTokenWithdrawn({ ...ctx, block: block.header, event: item.event })
           break
-        case 'Currencies.Transferred':
-          await handleTokenTransfer({ ...ctx, block: block.header, event: item.event }, TOEKN_EVENT_TYPE.Currencies)
+        case 'Assets.Transferred':
+          await handleTokenTransfer({ ...ctx, block: block.header, event: item.event })
           break
-        case 'Tokens.Deposited':
-          await handleTokenDeposited({ ...ctx, block: block.header, event: item.event }, TOEKN_EVENT_TYPE.Tokens)
-          break
-        case 'Tokens.Withdrawn':
-          await handleTokenWithdrawn({ ...ctx, block: block.header, event: item.event }, TOEKN_EVENT_TYPE.Tokens)
-          break
-        case 'Tokens.Transfer':
-          await handleTokenTransfer({ ...ctx, block: block.header, event: item.event }, TOEKN_EVENT_TYPE.Tokens)
-          break
+        // case 'Tokens.Deposited':
+        //   await handleTokenDeposited({ ...ctx, block: block.header, event: item.event }, TOEKN_EVENT_TYPE.Tokens)
+        //   break
+        // case 'Tokens.Withdrawn':
+        //   await handleTokenWithdrawn({ ...ctx, block: block.header, event: item.event }, TOEKN_EVENT_TYPE.Tokens)
+        //   break
+        // case 'Tokens.Transfer':
+        //   await handleTokenTransfer({ ...ctx, block: block.header, event: item.event }, TOEKN_EVENT_TYPE.Tokens)
+        //   break
         case 'ZenlinkProtocol.LiquidityAdded':
           await handleLiquidityAdded({ ...ctx, block: block.header, event: item.event })
           break
@@ -73,9 +73,9 @@ processor.run(new TypeormDatabase(), async ctx => {
         case 'ZenlinkProtocol.AssetSwap':
           await handleAssetSwap({ ...ctx, block: block.header, event: item.event })
           break
-        case 'Tokens.BalanceSet':
-          await handleTokensBalanceSet({ ...ctx, block: block.header, event: item.event })
-          break
+        // case 'Tokens.BalanceSet':
+        //   await handleTokensBalanceSet({ ...ctx, block: block.header, event: item.event })
+        //   break
         // farming
         case 'Farming.FarmingPoolCreated':
           await handleFarmingPoolCreated({ ...ctx, block: block.header, event: item.event })

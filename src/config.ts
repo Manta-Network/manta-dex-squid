@@ -5,7 +5,11 @@ export const config: ProcessorConfig = {
   chainName: 'calamari',
   prefix: 'calamari',
   dataSource: {
-    archive: 'https://calamari.archive.subsquid.io/graphql',
+    archive: 'http://localhost:4444/graphql',
     chain: CHAIN_NODE,
   },
 }
+
+
+// calamari data <-
+// local    data <-

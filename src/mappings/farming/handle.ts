@@ -1,7 +1,6 @@
 import { EventHandlerContext } from "../../types";
-import { FarmingFarmingPoolCreatedEvent, TokensBalanceSetEvent } from "../../types/events";
 import { formatFarmingAllForceGaugeClaimedEvent, formatFarmingAllRetiredEvent, formatFarmingChargedEvent, formatFarmingClaimedEvent, formatFarmingCreatedPoolEvent, formatFarmingDepositedEvent, formatFarmingGaugeWithdrawnEvent, formatFarmingPartiallyForceGaugeClaimedEvent, formatFarmingPartiallyRetiredEvent, formatFarmingPoolClosedEvent, formatFarmingPoolEditedEvent, formatFarmingPoolKilledEvent, formatFarmingPoolResetEvent, formatFarmingRetireLimitSetEvent, formatFarmingWithdrawClaimedEvent, formatFarmingWithdrawnEvent, getFamingPoolInfo, killFarmingPoolInfo, updateFarmingPoolInfo } from "../../utils/farming";
-import { getStakePosition } from "../../entities/farming";
+// import { getStakePosition } from "../../entities/farming";
 import { getUser } from "../../entities/user";
 import { Farm } from "../../model";
 import { updateStakePosition } from "../farming/update";
@@ -160,6 +159,6 @@ export async function handleFarmingPartiallyRetired(ctx: EventHandlerContext) {
 
 
 
-export async function handleSyncFamingPoolInfo(ctx: EventHandlerContext, pid: number) {
+export async function handleSyncFamingPoolInfo(ctx: EventHandlerContext, pid: bigint) {
   await updateFarmingPoolInfo(ctx, pid);
 }

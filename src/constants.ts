@@ -1,9 +1,8 @@
-import { TokenBase } from "./types";
+import { TokenBase } from './types'
 import { Big as BigDecimal } from 'big.js'
-import { AssetId } from "./types/v906";
-import { zenlinkAssetIdToCurrencyId } from "./utils/token";
+import { AssetId } from './types/v4100'
 
-export const CHAIN_NODE = process.env.BIFROST_KUSAMA_CHAIN_NODE || 'wss://calamari.systems'
+export const CHAIN_NODE = process.env.BIFROST_KUSAMA_CHAIN_NODE || 'wss://zenlink.zqhxuyuan.cloud:444'
 
 export const TOKEN_METADATA_MAP: { [address: string]: TokenBase } = {
   '2084-0-1': { name: 'Calamari', symbol: 'KMA', decimals: 12 },
@@ -22,12 +21,12 @@ export const CHAIN_ID = 2084
 export const ZLK_ASSET_ID: AssetId = {
   chainId: CHAIN_ID,
   assetType: 2,
-  assetIndex: 519n
+  assetIndex: 519n,
 }
 
-export const ZLK_CURRENCY_ID = zenlinkAssetIdToCurrencyId(ZLK_ASSET_ID);
+export const ZLK_CURRENCY_ID = ZLK_ASSET_ID
 
-export const ZLK_GOV_ACCOUNT = ['cRzg4nyCBKbCZaCYmNQksWGMJuectrHom15ZiuYd7h6NtvW'];
+export const ZLK_GOV_ACCOUNT = ['cRzg4nyCBKbCZaCYmNQksWGMJuectrHom15ZiuYd7h6NtvW']
 
 export const ZERO_BI = 0n
 export const ONE_BI = 1n

@@ -1,50 +1,59 @@
 import { TOKEN_METADATA_MAP, ZERO_BD } from "../constants";
 import { Token } from "../model";
 import { EventHandlerContext } from "../types";
-import { AssetRegistryCurrencyMetadatasStorage } from "../types/storage";
-import { AssetId } from "../types/v906";
-import { addressFromAsset, getTotalIssuance, u8a2s, zenlinkAssetIdToCurrencyId } from "../utils/token";
-import * as v956 from '../types/v956'
-import * as v962 from '../types/v962'
+import { AssetManagerAssetIdMetadataStorage } from "../types/storage";
+import { AssetId } from "../types/v4100";
+import {
+  addressFromAsset,
+  getTotalIssuance,
+  u8a2s,
+} from "../utils/token";
 
-export async function getOrCreateToken(ctx: EventHandlerContext, asset: AssetId): Promise<Token | undefined> {
-  const address = addressFromAsset(asset)
-  let token = await ctx.store.get(Token, address)
+export async function getOrCreateToken(
+  ctx: EventHandlerContext,
+  asset: AssetId
+): Promise<Token | undefined> {
+  const address = addressFromAsset(asset);
+  let token = await ctx.store.get(Token, address);
 
   if (!token) {
-    const metadataStorage = new AssetRegistryCurrencyMetadatasStorage(ctx, ctx.block)
-    let metaddata
+    const metadataStorage = new AssetManagerAssetIdMetadataStorage(
+      ctx,
+      ctx.block
+    );
+    let metaddata;
 
     if (!metadataStorage.isExists) {
-      metaddata = TOKEN_METADATA_MAP[address]
+      metaddata = TOKEN_METADATA_MAP[address];
     } else {
-      const currencyId = zenlinkAssetIdToCurrencyId(asset)
-      const result = metadataStorage.isV956
-        ? await metadataStorage.asV956.get(currencyId as v956.CurrencyId)
-        : metadataStorage.isV962
-          ? await metadataStorage.asV962.get(currencyId as v962.CurrencyId)
-          : undefined
+      const currencyId = asset;
+      const result = metadataStorage.isV4100
+        ? await metadataStorage.asV4100.get(currencyId.assetIndex)
+        : undefined;
 
       if (result) {
         metaddata = {
-          symbol: u8a2s(result.symbol),
-          name: u8a2s(result.name),
-          decimals: result.decimals
-        }
+          symbol: u8a2s(result.metadata.symbol),
+          name: u8a2s(result.metadata.name),
+          decimals: result.metadata.decimals,
+        };
       }
-      if(!metaddata) {
-        metaddata = TOKEN_METADATA_MAP[address]
+      if (!metaddata) {
+        metaddata = TOKEN_METADATA_MAP[address];
       }
     }
 
-    if (!metaddata) return undefined
-    const { name, symbol, decimals } = metaddata
-    const totalSupply = await getTotalIssuance(ctx, zenlinkAssetIdToCurrencyId(asset))
+    if (!metaddata) return undefined;
+    const { name, symbol, decimals } = metaddata;
+    const totalSupply = await getTotalIssuance(
+      ctx,
+      asset
+    );
     token = new Token({
       id: address.toLowerCase(),
       name,
       symbol,
-      totalSupply: totalSupply?.toString() ?? '0',
+      totalSupply: totalSupply?.toString() ?? "0",
       decimals,
       derivedETH: ZERO_BD.toString(),
       tradeVolume: ZERO_BD.toString(),
@@ -52,10 +61,10 @@ export async function getOrCreateToken(ctx: EventHandlerContext, asset: AssetId)
       untrackedVolumeUSD: ZERO_BD.toString(),
       totalLiquidity: ZERO_BD.toString(),
       txCount: 0,
-    })
+    });
 
-    await ctx.store.save(token)
+    await ctx.store.save(token);
   }
 
-  return token
+  return token;
 }
