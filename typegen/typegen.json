@@ -1,6 +1,6 @@
 {
   "outDir": "../src/types",
-  "specVersions": "http://localhost:4444/graphql",
+  "specVersions": "http://34.227.17.192:4444/graphql",
   "typesBundle": "calamari",
   "events": [
     "Assets.Transferred", // Currencies.Transferred
