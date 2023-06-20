@@ -6,8 +6,9 @@ description: |-
 build:
 
 deploy:
-  # secrets:
-  #   - BIFROST_KUSAMA_CHAIN_NODE
+  secrets:
+    - SUBSCAN_API_KEY
+    # - BIFROST_KUSAMA_CHAIN_NODE
   addons:
     postgres:
   processor:
