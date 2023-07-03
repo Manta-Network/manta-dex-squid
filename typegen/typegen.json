@@ -1,6 +1,6 @@
 {
   "outDir": "../src/types",
-  "specVersions": "http://34.227.17.192:8888/graphql",
+  "specVersions": "https://dev.calamari-debug.graphql.nonprod-mantadex.com/graphql",
   "typesBundle": "calamari",
   "events": [
     "Assets.Transferred", // Currencies.Transferred
