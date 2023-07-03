@@ -1,13 +1,14 @@
 manifestVersion: subsquid.io/v0.1
-name: manta-dex-calamari-squid
+name: manta-dex-calamari-debug-squid
 version: 4
 description: |-
   Manta DEX calamari Squid
 build:
 
 deploy:
-  # secrets:
-  #   - BIFROST_KUSAMA_CHAIN_NODE
+  secrets:
+    - SUBSCAN_API_KEY
+    # - BIFROST_KUSAMA_CHAIN_NODE
   addons:
     postgres:
   processor:

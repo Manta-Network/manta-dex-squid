@@ -1,11 +1,11 @@
 {
   "outDir": "../src/types",
-  "specVersions": "https://bifrost.archive.subsquid.io/graphql",
-  "typesBundle": "bifrost",
+  "specVersions": "https://dev.calamari-debug.graphql.nonprod-mantadex.com/graphql",
+  "typesBundle": "calamari",
   "events": [
-    "Currencies.Transferred",
-    "Currencies.Deposited",
-    "Currencies.Withdrawn",
+    "Assets.Transferred", // Currencies.Transferred
+    "Assets.Issued", // "Currencies.Deposited",
+    "Assets.Burned", // "Currencies.Withdrawn",
     "Farming.FarmingPoolCreated",
     "Farming.FarmingPoolReset",
     "Farming.FarmingPoolClosed",
@@ -24,17 +24,18 @@
     "Farming.RetireLimitSet",
 
 
-    "Tokens.Transfer",
-    "Tokens.Deposited",
-    "Tokens.Withdrawn",
-    "Tokens.BalanceSet",
+    // "Tokens.Transfer",
+    // "Tokens.Deposited",
+    // "Tokens.Withdrawn",
+    // "Tokens.BalanceSet",
     "ZenlinkProtocol.AssetSwap",
     "ZenlinkProtocol.LiquidityAdded",
     "ZenlinkProtocol.LiquidityRemoved"
   ],
   "calls": [],
   "storage": [
-    "AssetRegistry.CurrencyMetadatas",
+    "AssetManager.AssetIdMetadata", // "AssetRegistry.CurrencyMetadatas",
+    "AssetManager.LpToAssetIdPair",
     "System.Account",
     "Balances.TotalIssuance",
     "Farming.PoolInfos",
@@ -43,8 +44,9 @@
     "Farming.SharesAndWithdrawnRewards",
     "System.BlockHash",
     "Timestamp.Now",
-    "Tokens.Accounts",
-    "Tokens.TotalIssuance",
+    "Assets.Asset",
+    "Assets.Account", // "Tokens.Accounts",
+    // "Tokens.TotalIssuance",
     "ZenlinkProtocol.PairStatuses",
     "ZenlinkProtocol.LiquidityPairs"
   ]

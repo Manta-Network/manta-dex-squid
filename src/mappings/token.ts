@@ -1,11 +1,11 @@
 import { codec } from '@subsquid/ss58'
-import { getPair } from "../entities/pair";
-import { getPosition, getTransaction } from "../entities/utils";
-import { CHAIN_ID, ZERO_BD } from '../constants';
-import { EventHandlerContext, TOEKN_EVENT_TYPE } from "../types";
-import { config } from "../config";
+import { getPair } from '../entities/pair'
+import { getPosition, getTransaction } from '../entities/utils'
+import { CHAIN_ID, ZERO_BD } from '../constants'
+import { EventHandlerContext, TOEKN_EVENT_TYPE } from '../types'
+import { config } from '../config'
 import { Big as BigDecimal } from 'big.js'
-import { createLiquidityPosition } from '../utils/helpers';
+import { createLiquidityPosition } from '../utils/helpers'
 import {
   Bundle,
   Burn,
@@ -15,78 +15,47 @@ import {
   Pair,
   Token,
   Transaction,
-  User
-} from "../model";
-import {
-  CurrenciesDepositedEvent,
-  CurrenciesTransferredEvent,
-  CurrenciesWithdrawnEvent,
-  TokensDepositedEvent,
-  TokensTransferEvent,
-  TokensWithdrawnEvent
-} from "../types/events";
-import {
-  getPairStatusFromAssets,
-  getTokenBalance,
-  invertedTokenSymbolMap,
-  parseToTokenIndex
-} from "../utils/token";
-
+  User,
+} from '../model'
+import { AssetsBurnedEvent, AssetsIssuedEvent, AssetsTransferredEvent } from '../types/events'
+import { assetIdAdaptZenlink, getPairStatusFromAssets, getTokenBalance } from '../utils/token'
+import { AssetManagerLpToAssetIdPairStorage } from '../types/storage'
 
 async function isCompleteMint(ctx: EventHandlerContext, mintId: string): Promise<boolean> {
   return !!(await ctx.store.get(Mint, mintId))?.sender // sufficient checks
 }
 
-export async function handleTokenDeposited(ctx: EventHandlerContext, type: TOEKN_EVENT_TYPE) {
+export async function handleTokenDeposited(ctx: EventHandlerContext) {
   const transactionHash = ctx.event.extrinsic?.hash
   if (!transactionHash) return
-  let event
-  if (type === TOEKN_EVENT_TYPE.Currencies) {
-    const _event = new CurrenciesDepositedEvent(ctx, ctx.event)
-    if (_event.isV802) {
-      event = { currencyId: _event.asV802[0], who: _event.asV802[1], amount: _event.asV802[2] }
-    } else if (_event.isV906) {
-      event = { currencyId: _event.asV906[0], who: _event.asV906[1], amount: _event.asV906[2] }
-    } else if (_event.isV916) {
-      event = { currencyId: _event.asV916[0], who: _event.asV916[1], amount: _event.asV916[2] }
-    } else if (_event.isV920) {
-      event = { currencyId: _event.asV920[0], who: _event.asV920[1], amount: _event.asV920[2] }
-    } else if (_event.isV925) {
-      event = _event.asV925
-    } else if (_event.isV932) {
-      event = _event.asV932
-    }
-  } else {
-    const _event = new TokensDepositedEvent(ctx, ctx.event)
-    if (_event.isV944) {
-      event = _event.asV944
-    } else if (_event.isV956) {
-      event = _event.asV956
-    } else if (_event.isV962) {
-      event = _event.asV962
-    }
-  }
 
-  if (!event || event?.currencyId.__kind !== 'LPToken') return
-  const [token0Symbol, token0Id, token1Symbol, token1Id] = event.currencyId.value
+  const issuedEvent = new AssetsIssuedEvent(ctx, ctx.event)
 
-  const token0Index = parseToTokenIndex(token0Id, Number(invertedTokenSymbolMap[token0Symbol.__kind]))
-  const token1Index = parseToTokenIndex(token1Id, Number(invertedTokenSymbolMap[token1Symbol.__kind]))
-  const asset0 = { chainId: CHAIN_ID, assetType: token0Index === 0 ? 0 : 2, assetIndex: BigInt(token0Index) }
-  const asset1 = { chainId: CHAIN_ID, assetType: token1Index === 0 ? 0 : 2, assetIndex: BigInt(token1Index) }
+  const event = issuedEvent.asV4100
+
+  const lpToAssetIdPairStorage = new AssetManagerLpToAssetIdPairStorage(ctx)
+
+  const lpToken = await lpToAssetIdPairStorage.asV4100.get(event.assetId)
+
+  if (!event || !lpToken) return
+
+  const [token0Index, token1Index] = lpToken
+
+  const asset0 = assetIdAdaptZenlink(CHAIN_ID, token0Index)
+  const asset1 = assetIdAdaptZenlink(CHAIN_ID, token1Index)
 
   const pair = await getPair(ctx, [asset0, asset1])
   if (!pair) return
 
-  const value = event.amount.toString()
-  const to = codec(config.prefix).encode(event.who)
+  const value = event.totalSupply.toString()
+  const to = codec(config.prefix).encode(event.owner)
   let user = await ctx.store.get(User, to)
   if (!user) {
     user = new User({
       id: to,
       liquidityPositions: [],
       stableSwapLiquidityPositions: [],
-      usdSwapped: ZERO_BD.toFixed(6)
+      usdSwapped: ZERO_BD.toFixed(6),
     })
     await ctx.store.save(user)
   }
@@ -108,14 +77,14 @@ export async function handleTokenDeposited(ctx: EventHandlerContext, type: TOEKN
   const { mints } = transaction
 
   pair.totalSupply = (await getPairStatusFromAssets(ctx, [asset0, asset1], false))[1].toString()
-  if (!mints.length || await isCompleteMint(ctx, mints[mints.length - 1])) {
+  if (!mints.length || (await isCompleteMint(ctx, mints[mints.length - 1]))) {
     const mint = new Mint({
       id: `${transactionHash}-${mints.length}`,
       transaction,
       pair,
       to,
       liquidity: value,
-      timestamp: new Date(ctx.block.timestamp)
+      timestamp: new Date(ctx.block.timestamp),
     })
     await ctx.store.save(mint)
     transaction.mints = mints.concat([mint.id])
@@ -124,61 +93,40 @@ export async function handleTokenDeposited(ctx: EventHandlerContext, type: TOEKN
   await ctx.store.save(pair)
 
   const position = await updateLiquidityPosition(ctx, pair, user)
-  position.liquidityTokenBalance = (await getTokenBalance(ctx, event.currencyId, event.who))?.toString() ?? '0'
+  position.liquidityTokenBalance = (await getTokenBalance(ctx, event.assetId, event.owner))?.toString() ?? '0'
   await ctx.store.save(position)
   await createLiquiditySnapShot(ctx, pair, position)
 }
 
-export async function handleTokenWithdrawn(ctx: EventHandlerContext, type: TOEKN_EVENT_TYPE) {
+export async function handleTokenWithdrawn(ctx: EventHandlerContext) {
   const transactionHash = ctx.event.extrinsic?.hash
   if (!transactionHash) return
-  let event
-  if (type === TOEKN_EVENT_TYPE.Currencies) {
-    const _event = new CurrenciesWithdrawnEvent(ctx, ctx.event)
-    if (_event.isV802) {
-      event = { currencyId: _event.asV802[0], who: _event.asV802[1], amount: _event.asV802[2] }
-    } else if (_event.isV906) {
-      event = { currencyId: _event.asV906[0], who: _event.asV906[1], amount: _event.asV906[2] }
-    } else if (_event.isV916) {
-      event = { currencyId: _event.asV916[0], who: _event.asV916[1], amount: _event.asV916[2] }
-    } else if (_event.isV920) {
-      event = { currencyId: _event.asV920[0], who: _event.asV920[1], amount: _event.asV920[2] }
-    } else if (_event.isV925) {
-      event = _event.asV925
-    } else if (_event.isV932) {
-      event = _event.asV932
-    }
-  } else {
-    const _event = new TokensWithdrawnEvent(ctx, ctx.event)
-    if (_event.isV944) {
-      event = _event.asV944
-    } else if (_event.isV956) {
-      event = _event.asV956
-    } else if (_event.isV962) {
-      event = _event.asV962
-    }
-  }
 
-  if (!event || event?.currencyId.__kind !== 'LPToken') return
-  const [token0Symbol, token0Id, token1Symbol, token1Id] = event.currencyId.value
+  const burnedEvent = new AssetsBurnedEvent(ctx, ctx.event)
+  const event = burnedEvent.asV4100
 
-  const token0Index = parseToTokenIndex(token0Id, Number(invertedTokenSymbolMap[token0Symbol.__kind]))
-  const token1Index = parseToTokenIndex(token1Id, Number(invertedTokenSymbolMap[token1Symbol.__kind]))
-  const asset0 = { chainId: CHAIN_ID, assetType: token0Index === 0 ? 0 : 2, assetIndex: BigInt(token0Index) }
-  const asset1 = { chainId: CHAIN_ID, assetType: token1Index === 0 ? 0 : 2, assetIndex: BigInt(token1Index) }
+  const lpToAssetIdPairStorage = new AssetManagerLpToAssetIdPairStorage(ctx)
+
+  const lpToken = await lpToAssetIdPairStorage.asV4100.get(event.assetId)
+
+  if (!event || !lpToken) return
+
+  const [token0Index, token1Index] = lpToken
+  const asset0 = assetIdAdaptZenlink(CHAIN_ID, token0Index)
+  const asset1 = assetIdAdaptZenlink(CHAIN_ID, token1Index)
 
   const pair = await getPair(ctx, [asset0, asset1])
   if (!pair) return
 
-  const value = event.amount.toString()
-  const to = codec(config.prefix).encode(event.who)
+  const value = event.balance.toString()
+  const to = codec(config.prefix).encode(event.owner)
   let user = await ctx.store.get(User, to)
   if (!user) {
     user = new User({
       id: to,
       liquidityPositions: [],
       stableSwapLiquidityPositions: [],
-      usdSwapped: ZERO_BD.toFixed(6)
+      usdSwapped: ZERO_BD.toFixed(6),
     })
     await ctx.store.save(user)
   }
@@ -211,7 +159,7 @@ export async function handleTokenWithdrawn(ctx: EventHandlerContext, type: TOEKN
         needsComplete: false,
         pair,
         liquidity: value,
-        timestamp: new Date(ctx.block.timestamp)
+        timestamp: new Date(ctx.block.timestamp),
       })
     }
   } else {
@@ -221,7 +169,7 @@ export async function handleTokenWithdrawn(ctx: EventHandlerContext, type: TOEKN
       needsComplete: false,
       pair,
       liquidity: value,
-      timestamp: new Date(ctx.block.timestamp)
+      timestamp: new Date(ctx.block.timestamp),
     })
   }
 
@@ -251,55 +199,24 @@ export async function handleTokenWithdrawn(ctx: EventHandlerContext, type: TOEKN
   await ctx.store.save(pair)
 
   const position = await updateLiquidityPosition(ctx, pair, user)
-  position.liquidityTokenBalance = (await getTokenBalance(ctx, event.currencyId, event.who))?.toString() ?? '0'
+  position.liquidityTokenBalance = (await getTokenBalance(ctx, event.assetId, event.owner))?.toString() ?? '0'
   await ctx.store.save(position)
   await createLiquiditySnapShot(ctx, pair, position)
 }
 
-export async function handleTokenTransfer(ctx: EventHandlerContext, type: TOEKN_EVENT_TYPE) {
-  let event
-  if (type === TOEKN_EVENT_TYPE.Currencies) {
-    const _event = new CurrenciesTransferredEvent(ctx, ctx.event)
-    if (_event.isV802) {
-      event = { currencyId: _event.asV802[0], from: _event.asV802[1], to: _event.asV802[2], amount: _event.asV802[3] }
-    } else if (_event.isV906) {
-      event = { currencyId: _event.asV906[0], from: _event.asV906[1], to: _event.asV906[2], amount: _event.asV906[3] }
-    } else if (_event.isV916) {
-      event = { currencyId: _event.asV916[0], from: _event.asV916[1], to: _event.asV916[2], amount: _event.asV916[3] }
-    } else if (_event.isV920) {
-      event = { currencyId: _event.asV920[0], from: _event.asV920[1], to: _event.asV920[2], amount: _event.asV920[3] }
-    } else if (_event.isV925) {
-      event = _event.asV925
-    } else if (_event.isV932) {
-      event = _event.asV932
-    }
-  } else {
-    const _event = new TokensTransferEvent(ctx, ctx.event)
-    if (_event.isV802) {
-      event = { currencyId: _event.asV802[0], from: _event.asV802[1], to: _event.asV802[2], amount: _event.asV802[3] }
-    } else if (_event.isV906) {
-      event = { currencyId: _event.asV906[0], from: _event.asV906[1], to: _event.asV906[2], amount: _event.asV906[3] }
-    } else if (_event.isV916) {
-      event = { currencyId: _event.asV916[0], from: _event.asV916[1], to: _event.asV916[2], amount: _event.asV916[3] }
-    } else if (_event.isV920) {
-      event = { currencyId: _event.asV920[0], from: _event.asV920[1], to: _event.asV920[2], amount: _event.asV920[3] }
-    } else if (_event.isV925) {
-      event = _event.asV925
-    } else if (_event.isV932) {
-      event = _event.asV932
-    } else if (_event.isV956) {
-      event = _event.asV956
-    } else if (_event.isV962) {
-      event = _event.asV962
-    }
-  }
+export async function handleTokenTransfer(ctx: EventHandlerContext) {
+  const issuedEvent = new AssetsTransferredEvent(ctx, ctx.event)
+  const event = issuedEvent.asV4100
 
-  if (!event || event?.currencyId.__kind !== 'LPToken') return
-  const [token0Symbol, token0Id, token1Symbol, token1Id] = event.currencyId.value
-  const token0Index = parseToTokenIndex(token0Id, Number(invertedTokenSymbolMap[token0Symbol.__kind]))
-  const token1Index = parseToTokenIndex(token1Id, Number(invertedTokenSymbolMap[token1Symbol.__kind]))
-  const asset0 = { chainId: CHAIN_ID, assetType: token0Index === 0 ? 0 : 2, assetIndex: BigInt(token0Index) }
-  const asset1 = { chainId: CHAIN_ID, assetType: token1Index === 0 ? 0 : 2, assetIndex: BigInt(token1Index) }
+  const lpToAssetIdPairStorage = new AssetManagerLpToAssetIdPairStorage(ctx)
+
+  const lpToken = await lpToAssetIdPairStorage.asV4100.get(event.assetId)
+
+  if (!event || !lpToken) return
+
+  const [token0Index, token1Index] = lpToken
+  const asset0 = assetIdAdaptZenlink(CHAIN_ID, token0Index)
+  const asset1 = assetIdAdaptZenlink(CHAIN_ID, token1Index)
 
   const pair = await getPair(ctx, [asset0, asset1])
   if (!pair) return
@@ -313,12 +230,12 @@ export async function handleTokenTransfer(ctx: EventHandlerContext, type: TOEKN_
       id: from,
       liquidityPositions: [],
       stableSwapLiquidityPositions: [],
-      usdSwapped: ZERO_BD.toString()
+      usdSwapped: ZERO_BD.toString(),
     })
     await ctx.store.save(userFrom)
   }
   const positionFrom = await updateLiquidityPosition(ctx, pair, userFrom)
-  positionFrom.liquidityTokenBalance = (await getTokenBalance(ctx, event.currencyId, event.from))?.toString() ?? '0'
+  positionFrom.liquidityTokenBalance = (await getTokenBalance(ctx, event.assetId, event.from))?.toString() ?? '0'
   await ctx.store.save(positionFrom)
   await createLiquiditySnapShot(ctx, pair, positionFrom)
 
@@ -328,12 +245,12 @@ export async function handleTokenTransfer(ctx: EventHandlerContext, type: TOEKN_
       id: to,
       liquidityPositions: [],
       stableSwapLiquidityPositions: [],
-      usdSwapped: ZERO_BD.toFixed(6)
+      usdSwapped: ZERO_BD.toFixed(6),
     })
     await ctx.store.save(userTo)
   }
   const positionTo = await updateLiquidityPosition(ctx, pair, userTo)
-  positionTo.liquidityTokenBalance = (await getTokenBalance(ctx, event.currencyId, event.to))?.toString() ?? '0'
+  positionTo.liquidityTokenBalance = (await getTokenBalance(ctx, event.assetId, event.to))?.toString() ?? '0'
   await ctx.store.save(positionTo)
   await createLiquiditySnapShot(ctx, pair, positionTo)
 }
@@ -341,13 +258,13 @@ export async function handleTokenTransfer(ctx: EventHandlerContext, type: TOEKN_
 export async function updateLiquidityPosition(
   ctx: EventHandlerContext,
   pair: Pair,
-  user: User
+  user: User,
 ): Promise<LiquidityPosition> {
   let position = await getPosition(ctx, `${pair.id}-${user.id}`)
   if (!position) {
     position = createLiquidityPosition({
       pair,
-      user
+      user,
     })
 
     await ctx.store.save(position)
