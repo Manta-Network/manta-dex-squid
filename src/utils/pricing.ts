@@ -7,21 +7,23 @@ import { EventHandlerContext } from '../types'
 import { assetIdFromAddress } from './token'
 import { queryBundleBySubScan } from './nativeToken'
 
-export const WNATIVE = '2084-0-0' // KMA
-export const KAR = '2084-2-8'  // KAR
-export const MOVR = '2084-2-11'
-export const KSM = '2084-2-12'
-export const USDT = '2084-2-14'
-// export const WNATIVE_USDC = '2084-2-8796093023744'
+export const WNATIVE = '2104-0-0' // KMA
+export const MDOT = '2104-2-8'  // MDOT
+export const USDT = '2104-2-9' // USDT
+export const GLMR = '2104-2-10' // Moonbeam
+export const ACA = '2104-2-11' // Acala
+export const LDOT = '2104-2-12' // LDOT
+// export const WNATIVE_USDC = '2104-2-8796093023744'
 
 
 
 export const WHITELIST: string[] = [
   WNATIVE, // wnative
-  KAR, // KAR
-  KSM,
+  MDOT, // MDOT
   USDT,
-  MOVR
+  GLMR,
+  ACA,
+  LDOT
 ]
 
 // minimum liquidity required to count towards tracked volume for pairs with small # of Lps

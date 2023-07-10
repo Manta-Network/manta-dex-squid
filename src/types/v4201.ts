@@ -46,7 +46,7 @@ export interface GaugeInfo {
 }
 
 export interface GaugePoolInfo {
-    pid: bigint
+    poolId: bigint
     token: bigint
     keeper: Uint8Array
     rewardIssuer: Uint8Array

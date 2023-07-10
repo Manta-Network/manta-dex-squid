@@ -1,21 +1,21 @@
 import { TokenBase } from './types'
 import { Big as BigDecimal } from 'big.js'
 
-export const CHAIN_NODE = 'wss://zenlink.zqhxuyuan.cloud:444'
+export const CHAIN_NODE = 'wss://c1.baikal.testnet.manta.systems'
 
 export const TOKEN_METADATA_MAP: { [address: string]: TokenBase } = {
-  '2084-0-0': { name: 'Calamari', symbol: 'KMA', decimals: 12 },
-  '2084-2-8': { name: 'Karura Native Token', symbol: 'KAR', decimals: 12 },
-  '2084-2-11': { name: 'MOVR', symbol: 'MOVR', decimals: 18 },
-  '2084-2-12': { name: 'KSM', symbol: 'KSM', decimals: 12 },
-  '2084-2-14': { name: 'USDT', symbol: 'USDT', decimals: 6 },
-  // '2084-2-1028': { name: 'vsKSM', symbol: 'vsKSM', decimals: 12 },
-  // '2084-2-521': { name: 'RMRK', symbol: 'RMRK', decimals: 10 },
-  // '2084-2-260': { name: 'vKusama', symbol: 'vKSM', decimals: 12 },
-  // '2084-2-2048': { name: 'USDT', symbol: 'USDT', decimals: 6 },
+  '2104-0-0': { name: 'Manta', symbol: 'MANTA', decimals: 12 },
+  '2104-2-8': { name: 'Karura Native Token', symbol: 'KAR', decimals: 12 },
+  '2104-2-11': { name: 'MOVR', symbol: 'MOVR', decimals: 18 },
+  '2104-2-12': { name: 'KSM', symbol: 'KSM', decimals: 12 },
+  '2104-2-14': { name: 'USDT', symbol: 'USDT', decimals: 6 },
+  // '2104-2-1028': { name: 'vsKSM', symbol: 'vsKSM', decimals: 12 },
+  // '2104-2-521': { name: 'RMRK', symbol: 'RMRK', decimals: 10 },
+  // '2104-2-260': { name: 'vKusama', symbol: 'vKSM', decimals: 12 },
+  // '2104-2-2048': { name: 'USDT', symbol: 'USDT', decimals: 6 },
 }
 
-export const CHAIN_ID = 2084
+export const CHAIN_ID = 2104
 
 // export const ZLK_ASSET_ID: AssetId = {
 //   chainId: CHAIN_ID,
