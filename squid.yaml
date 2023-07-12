@@ -1,8 +1,8 @@
 manifestVersion: subsquid.io/v0.1
-name: manta-dex-calamari-debug-squid
+name: manta-dex-manta-debug-squid
 version: 4
 description: |-
-  Manta DEX calamari Squid
+  Manta DEX Manta Squid
 build:
 
 deploy:
