@@ -1,7 +1,7 @@
 {
   "outDir": "../src/types",
-  "specVersions": "https://dev.calamari-debug.graphql.nonprod-mantadex.com/graphql",
-  "typesBundle": "calamari",
+  "specVersions": "https://dev.manta-debug.graphql.nonprod-mantadex.com/graphql",
+  "typesBundle": "manta",
   "events": [
     "Assets.Transferred", // Currencies.Transferred
     "Assets.Issued", // "Currencies.Deposited",
