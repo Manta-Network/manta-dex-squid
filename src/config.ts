@@ -5,7 +5,7 @@ export const config: ProcessorConfig = {
   chainName: 'manta',
   prefix: 'manta',
   dataSource: {
-    archive: 'https://dev.calamari-debug.graphql.nonprod-mantadex.com/graphql',
+    archive: 'https://dev.manta-debug.graphql.nonprod-mantadex.com/graphql',
     chain: CHAIN_NODE,
   },
 }
