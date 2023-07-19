@@ -35,27 +35,30 @@ export const MINIMUM_USD_THRESHOLD_NEW_PAIRS = new BigDecimal(1000)
 export const MINIMUM_LIQUIDITY_THRESHOLD_ETH = new BigDecimal(5)
 
 export async function getEthPriceInUSD(ctx: EventHandlerContext): Promise<BigDecimal> {
-  
-  const usdtPair = await getPair(ctx, [assetIdFromAddress(WNATIVE), assetIdFromAddress(USDT)])
-  if (usdtPair) {
-    return usdtPair.token0.id === USDT
-      ? BigDecimal(usdtPair.token0Price)
-      : BigDecimal(usdtPair.token1Price)
-  } else {
-    const price =  await queryBundleBySubScan(ctx.block.timestamp);
-    return BigDecimal(price)
-  }
+  const price =  await queryBundleBySubScan(ctx.block.timestamp);
+  return BigDecimal(price)
+  // const usdtPair = await getPair(ctx, [assetIdFromAddress(WNATIVE), assetIdFromAddress(USDT)])
+  // if (usdtPair) {
+  //   return usdtPair.token0.id === USDT
+  //     ? BigDecimal(usdtPair.token0Price)
+  //     : BigDecimal(usdtPair.token1Price)
+  // }
 
-  // get ethprice from bnc-ksm > ksm-USDT pair
-  // const ksmPair = await getPair(ctx, [assetIdFromAddress(KSM), assetIdFromAddress(USDT)])
-  // const wnativePair = await getPair(ctx, [assetIdFromAddress(WNATIVE), assetIdFromAddress(KSM)])
-  // if (ksmPair && wnativePair) {
-  //   const ksmPrice = ksmPair.token0.id === USDT
-  //     ? BigDecimal(ksmPair.token0Price)
-  //     : BigDecimal(ksmPair.token1Price)
-  //   return wnativePair.token0.id === KSM
-  //     ? BigDecimal(wnativePair.token0Price).mul(ksmPrice)
-  //     : BigDecimal(wnativePair.token1Price).mul(ksmPrice)
+  // // get ethprice from bnc-ksm > ksm-USDT pair
+  // const glmrPair = await getPair(ctx, [assetIdFromAddress(GLMR), assetIdFromAddress(USDT)])
+  // const wnativePair = await getPair(ctx, [assetIdFromAddress(WNATIVE), assetIdFromAddress(GLMR)])
+  // if (glmrPair && wnativePair) {
+  //   const glmrPrice = glmrPair.token0.id === USDT
+  //     ? BigDecimal(glmrPair.token0Price)
+  //     : BigDecimal(glmrPair.token1Price)
+  //   return wnativePair.token0.id === GLMR
+  //     ? BigDecimal(wnativePair.token0Price).mul(glmrPrice)
+  //     : BigDecimal(wnativePair.token1Price).mul(glmrPrice)
+  // }
+
+  // const price =  await queryBundleBySubScan(ctx.block.timestamp);
+  // if(price) {
+  //   return BigDecimal(price)
   // }
   // return BigDecimal(0)
 }

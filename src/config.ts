@@ -10,7 +10,7 @@ export const config: ProcessorConfig = {
   },
 }
 
-export const SUBSCAN_ENDPOINT = 'https://manta.api.subscan.io'
+export const SUBSCAN_ENDPOINT = 'https://calamari.api.subscan.io'
 
 export const SUBSCAN_API_KEY = process.env.SUBSCAN_API_KEY
 
