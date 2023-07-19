@@ -35,16 +35,18 @@ export const MINIMUM_USD_THRESHOLD_NEW_PAIRS = new BigDecimal(1000)
 export const MINIMUM_LIQUIDITY_THRESHOLD_ETH = new BigDecimal(5)
 
 export async function getEthPriceInUSD(ctx: EventHandlerContext): Promise<BigDecimal> {
-  const price =  await queryBundleBySubScan(ctx.block.timestamp);
-  return BigDecimal(price)
-  // const usdcPair = await getPair(ctx, [assetIdFromAddress(WNATIVE), assetIdFromAddress(USDC)])
-  // if (usdcPair) {
-  //   return usdcPair.token0.id === USDC
-  //     ? BigDecimal(usdcPair.token0Price)
-  //     : BigDecimal(usdcPair.token1Price)
-  // }
+  
+  const usdtPair = await getPair(ctx, [assetIdFromAddress(WNATIVE), assetIdFromAddress(USDT)])
+  if (usdtPair) {
+    return usdtPair.token0.id === USDT
+      ? BigDecimal(usdtPair.token0Price)
+      : BigDecimal(usdtPair.token1Price)
+  } else {
+    const price =  await queryBundleBySubScan(ctx.block.timestamp);
+    return BigDecimal(price)
+  }
 
-  // // get ethprice from bnc-ksm > ksm-USDT pair
+  // get ethprice from bnc-ksm > ksm-USDT pair
   // const ksmPair = await getPair(ctx, [assetIdFromAddress(KSM), assetIdFromAddress(USDT)])
   // const wnativePair = await getPair(ctx, [assetIdFromAddress(WNATIVE), assetIdFromAddress(KSM)])
   // if (ksmPair && wnativePair) {
