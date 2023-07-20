@@ -379,7 +379,8 @@ export async function updateFarmingPoolInfo(ctx: EventHandlerContext, pid: bigin
   farmingData.stakeApr = stakeApr
 
   if (poolState?.__kind === 'Dead') {
-    ;(farmingData.rewardUSDPerDay = '0'), (farmingData.stakeApr = '0')
+    farmingData.rewardUSDPerDay = '0'
+    farmingData.stakeApr = '0'
   }
   await ctx.store.save(farmingData)
 
@@ -591,7 +592,8 @@ export async function killFarmingPoolInfo(ctx: EventHandlerContext, pid: bigint)
   farmingData.stakeApr = stakeApr
 
   if (poolState?.__kind === 'Dead') {
-    ;(farmingData.rewardUSDPerDay = '0'), (farmingData.stakeApr = '0')
+    farmingData.rewardUSDPerDay = '0'
+    farmingData.stakeApr = '0'
   }
   await ctx.store.save(farmingData)
 
