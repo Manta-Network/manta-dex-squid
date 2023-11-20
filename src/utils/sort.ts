@@ -1,4 +1,4 @@
-import { AssetId } from "../types/v4201";
+import { AssetId } from "../types/v4401";
 
 export function sortAssets(assets: [AssetId, AssetId]): [AssetId, AssetId] {
   const [asset0, asset1] = assets

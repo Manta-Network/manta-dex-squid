@@ -2,7 +2,7 @@ import { TOKEN_METADATA_MAP, ZERO_BD } from "../constants";
 import { Token } from "../model";
 import { EventHandlerContext } from "../types";
 import { AssetManagerAssetIdMetadataStorage } from "../types/storage";
-import { AssetId } from "../types/v4201";
+import { AssetId } from "../types/v4401";
 import {
   addressFromAsset,
   getTotalIssuance,
@@ -27,8 +27,8 @@ export async function getOrCreateToken(
       metaddata = TOKEN_METADATA_MAP[address];
     } else {
       const currencyId = asset;
-      const result = metadataStorage.isV4201
-        ? await metadataStorage.asV4201.get(currencyId.assetIndex)
+      const result = metadataStorage.isV4401
+        ? await metadataStorage.asV4401.get(currencyId.assetIndex)
         : undefined;
 
       if (result) {
