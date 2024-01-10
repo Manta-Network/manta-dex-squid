@@ -58,6 +58,21 @@ export class AssetsIssuedEvent {
         assert(this.isV4401)
         return this._chain.decodeEvent(this.event)
     }
+
+    /**
+     * Some assets were issued.
+     */
+    get isV4600(): boolean {
+        return this._chain.getEventHash('Assets.Issued') === 'a9be781c9ccb2985e855fb69a8b5dff97efbfdc9306e1e85133f29abdb927620'
+    }
+
+    /**
+     * Some assets were issued.
+     */
+    get asV4600(): {assetId: bigint, owner: Uint8Array, amount: bigint} {
+        assert(this.isV4600)
+        return this._chain.decodeEvent(this.event)
+    }
 }
 
 export class AssetsTransferredEvent {

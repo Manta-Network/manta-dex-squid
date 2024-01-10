@@ -1,6 +1,7 @@
 import assert from 'assert'
 import {Block, BlockContext, Chain, ChainContext, Option, Result, StorageBase} from './support'
 import * as v4401 from './v4401'
+import * as v4600 from './v4600'
 
 export class AssetManagerAssetIdMetadataStorage extends StorageBase {
     protected getPrefix() {
@@ -109,6 +110,21 @@ export class AssetsAccountStorage extends StorageBase {
         assert(this.isV4401)
         return this as any
     }
+
+    /**
+     *  The holdings of a specific account for a specific asset.
+     */
+    get isV4600(): boolean {
+        return this.getTypeHash() === 'c101916616470361869ffc454e1716a26043820583af00df688c1a63340d6f00'
+    }
+
+    /**
+     *  The holdings of a specific account for a specific asset.
+     */
+    get asV4600(): AssetsAccountStorageV4600 {
+        assert(this.isV4600)
+        return this as any
+    }
 }
 
 /**
@@ -130,6 +146,27 @@ export interface AssetsAccountStorageV4401 {
     getPairsPaged(pageSize: number): AsyncIterable<[k: [bigint, Uint8Array], v: v4401.AssetAccount][]>
     getPairsPaged(pageSize: number, key1: bigint): AsyncIterable<[k: [bigint, Uint8Array], v: v4401.AssetAccount][]>
     getPairsPaged(pageSize: number, key1: bigint, key2: Uint8Array): AsyncIterable<[k: [bigint, Uint8Array], v: v4401.AssetAccount][]>
+}
+
+/**
+ *  The holdings of a specific account for a specific asset.
+ */
+export interface AssetsAccountStorageV4600 {
+    get(key1: bigint, key2: Uint8Array): Promise<(v4600.AssetAccount | undefined)>
+    getAll(): Promise<v4600.AssetAccount[]>
+    getMany(keys: [bigint, Uint8Array][]): Promise<(v4600.AssetAccount | undefined)[]>
+    getKeys(): Promise<[bigint, Uint8Array][]>
+    getKeys(key1: bigint): Promise<[bigint, Uint8Array][]>
+    getKeys(key1: bigint, key2: Uint8Array): Promise<[bigint, Uint8Array][]>
+    getKeysPaged(pageSize: number): AsyncIterable<[bigint, Uint8Array][]>
+    getKeysPaged(pageSize: number, key1: bigint): AsyncIterable<[bigint, Uint8Array][]>
+    getKeysPaged(pageSize: number, key1: bigint, key2: Uint8Array): AsyncIterable<[bigint, Uint8Array][]>
+    getPairs(): Promise<[k: [bigint, Uint8Array], v: v4600.AssetAccount][]>
+    getPairs(key1: bigint): Promise<[k: [bigint, Uint8Array], v: v4600.AssetAccount][]>
+    getPairs(key1: bigint, key2: Uint8Array): Promise<[k: [bigint, Uint8Array], v: v4600.AssetAccount][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: [bigint, Uint8Array], v: v4600.AssetAccount][]>
+    getPairsPaged(pageSize: number, key1: bigint): AsyncIterable<[k: [bigint, Uint8Array], v: v4600.AssetAccount][]>
+    getPairsPaged(pageSize: number, key1: bigint, key2: Uint8Array): AsyncIterable<[k: [bigint, Uint8Array], v: v4600.AssetAccount][]>
 }
 
 export class AssetsAssetStorage extends StorageBase {
@@ -432,6 +469,21 @@ export class SystemAccountStorage extends StorageBase {
         assert(this.isV4401)
         return this as any
     }
+
+    /**
+     *  The full account information for a particular account ID.
+     */
+    get isV4600(): boolean {
+        return this.getTypeHash() === 'd6b7a816e0cf6dc8f60cb2bd55c5c5ae7ad928521a6e98aafbe6e954f5c54878'
+    }
+
+    /**
+     *  The full account information for a particular account ID.
+     */
+    get asV4600(): SystemAccountStorageV4600 {
+        assert(this.isV4600)
+        return this as any
+    }
 }
 
 /**
@@ -449,6 +501,23 @@ export interface SystemAccountStorageV4401 {
     getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: v4401.AccountInfo][]>
     getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: v4401.AccountInfo][]>
     getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: v4401.AccountInfo][]>
+}
+
+/**
+ *  The full account information for a particular account ID.
+ */
+export interface SystemAccountStorageV4600 {
+    get(key: Uint8Array): Promise<v4600.AccountInfo>
+    getAll(): Promise<v4600.AccountInfo[]>
+    getMany(keys: Uint8Array[]): Promise<v4600.AccountInfo[]>
+    getKeys(): Promise<Uint8Array[]>
+    getKeys(key: Uint8Array): Promise<Uint8Array[]>
+    getKeysPaged(pageSize: number): AsyncIterable<Uint8Array[]>
+    getKeysPaged(pageSize: number, key: Uint8Array): AsyncIterable<Uint8Array[]>
+    getPairs(): Promise<[k: Uint8Array, v: v4600.AccountInfo][]>
+    getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: v4600.AccountInfo][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: v4600.AccountInfo][]>
+    getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: v4600.AccountInfo][]>
 }
 
 export class SystemBlockHashStorage extends StorageBase {
