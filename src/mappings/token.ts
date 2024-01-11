@@ -29,13 +29,13 @@ export async function handleTokenDeposited(ctx: EventHandlerContext) {
   const transactionHash = ctx.event.extrinsic?.hash
   if (!transactionHash) return
 
-  const issuedEvent = new AssetsIssuedEvent(ctx, ctx.event)
+  const _event = new AssetsIssuedEvent(ctx, ctx.event)
 
   let event
-  if (issuedEvent.isV4600) {
-    event = issuedEvent.asV4600
+  if (_event.isV4401) {
+    event = { assetId: _event.asV4401.assetId, owner: _event.asV4401.owner, amount: _event.asV4401.totalSupply }
   } else {
-    event = issuedEvent.asV4401
+    event = _event.asV4600
   }
 
   const lpToAssetIdPairStorage = new AssetManagerLpToAssetIdPairStorage(ctx)
@@ -52,12 +52,8 @@ export async function handleTokenDeposited(ctx: EventHandlerContext) {
   const pair = await getPair(ctx, [asset0, asset1])
   if (!pair) return
 
-  let value
-  if (issuedEvent.isV4600) {
-    value = issuedEvent.asV4600.amount.toString()
-  } else {
-    value = issuedEvent.asV4401.totalSupply.toString()
-  }
+  const value = event.amount.toString()
+
   const to = codec(config.prefix).encode(event.owner)
   let user = await ctx.store.get(User, to)
   if (!user) {
