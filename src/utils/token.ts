@@ -228,11 +228,19 @@ export async function getTokenBalance(ctx: EventHandlerContext, assetId: bigint,
   let result
   if ([BigInt(0), BigInt(1)].includes(assetId)) {
     const systemAccountStorate = new SystemAccountStorage(ctx, ctx.block)
-    result = (await systemAccountStorate.asV4401.get(account)).data
+    if (systemAccountStorate.asV4600) {
+      result = (await systemAccountStorate.asV4600.get(account)).data
+    } else {
+      result = (await systemAccountStorate.asV4401.get(account)).data
+    }
     return result?.free
   } else {
     const assetsAccountStorage = new AssetsAccountStorage(ctx, ctx.block)
-    result = await assetsAccountStorage.asV4401.get(assetId, account)
+    if (assetsAccountStorage.isV4600) {
+      result = await assetsAccountStorage.asV4600.get(assetId, account)
+    } else {
+      result = await assetsAccountStorage.asV4401.get(assetId, account)
+    }
     return result?.balance
   }
 }
