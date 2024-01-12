@@ -1,14 +1,18 @@
 import { SubstrateBatchProcessor } from "@subsquid/substrate-processor"
 import { TypeormDatabase } from "@subsquid/typeorm-store"
-import { config } from "./config"
 import { handleFarmingCharged, handleFarmingClaimed, handleFarmingDeposited, handleFarmingGaugeWithdrawn, handleFarmingPoolClosed, handleFarmingPoolCreated, handleFarmingPoolEdited, handleFarmingPoolKilled, handleFarmingPoolReset, handleFarmingWithdrawClaimed, handleFarmingWithdrawn } from "./mappings/farming/handle"
 import { handleAssetSwap, handleLiquidityAdded, handleLiquidityRemoved } from './mappings/protocol'
 import { handleTokenDeposited, handleTokenTransfer, handleTokenWithdrawn } from "./mappings/token"
+import { lookupArchive } from '@subsquid/archive-registry'
+import { config } from "./config"
 
 const DataSelection = { data: { event: true } } as const
 
 const processor = new SubstrateBatchProcessor()
-  .setDataSource(config.dataSource)
+  .setDataSource({
+    archive: lookupArchive("manta", { type: "Substrate", release: "FireSquid" }),
+    chain: config.dataSource.chain
+  })
   .setBlockRange({ from: 0 })
   .addEvent('Assets.Transferred', DataSelection)
   .addEvent('Assets.Issued', DataSelection)
