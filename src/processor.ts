@@ -13,7 +13,7 @@ const processor = new SubstrateBatchProcessor()
     archive: lookupArchive("manta", { type: "Substrate", release: "FireSquid" }),
     chain: config.dataSource.chain
   })
-  .setBlockRange({ from: 0 })
+  .setBlockRange({ from: 799906 })
   .addEvent('Assets.Transferred', DataSelection)
   .addEvent('Assets.Issued', DataSelection)
   .addEvent('Assets.Burned', DataSelection)

@@ -1,8 +1,8 @@
 manifestVersion: subsquid.io/v0.1
-name: manta-dex-manta-debug-squid
+name: manta-dex-manta-prod-squid
 version: 4
 description: |-
-  Manta DEX Manta Squid
+  Manta DEX Manta Squid Prod
 build:
 
 deploy:
@@ -11,7 +11,23 @@ deploy:
     # - BIFROST_KUSAMA_CHAIN_NODE
   addons:
     postgres:
+      config:
+        statement_timeout: 100000
+        log_min_duration_statement: 100000
   processor:
     cmd: [ "node", "lib/processor" ]
   api:
     cmd: [ "npx", "squid-graphql-server"]
+
+scale:
+  dedicated: true
+  addons:
+    postgres:
+      storage: 100G
+      profile: small
+  processor:
+    profile: small
+  api:
+    profile: small
+    # load-balance three replicas
+    replicas: 2

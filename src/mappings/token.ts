@@ -29,13 +29,18 @@ export async function handleTokenDeposited(ctx: EventHandlerContext) {
   const transactionHash = ctx.event.extrinsic?.hash
   if (!transactionHash) return
 
-  const issuedEvent = new AssetsIssuedEvent(ctx, ctx.event)
+  const _event = new AssetsIssuedEvent(ctx, ctx.event)
 
-  const event = issuedEvent.asV4401
+  let event
+  if (_event.isV4060) {
+    event = { assetId: _event.asV4060.assetId, owner: _event.asV4060.owner, amount: _event.asV4060.totalSupply }
+  } else {
+    event = _event.asV4600
+  }
 
   const lpToAssetIdPairStorage = new AssetManagerLpToAssetIdPairStorage(ctx)
 
-  const lpToken = await lpToAssetIdPairStorage.asV4401.get(event.assetId)
+  const lpToken = await lpToAssetIdPairStorage.asV4100.get(event.assetId)
 
   if (!event || !lpToken) return
 
@@ -47,7 +52,7 @@ export async function handleTokenDeposited(ctx: EventHandlerContext) {
   const pair = await getPair(ctx, [asset0, asset1])
   if (!pair) return
 
-  const value = event.totalSupply.toString()
+  const value = event.amount.toString()
   const to = codec(config.prefix).encode(event.owner)
   let user = await ctx.store.get(User, to)
   if (!user) {
@@ -103,11 +108,11 @@ export async function handleTokenWithdrawn(ctx: EventHandlerContext) {
   if (!transactionHash) return
 
   const burnedEvent = new AssetsBurnedEvent(ctx, ctx.event)
-  const event = burnedEvent.asV4401
+  const event = burnedEvent.asV4060
 
   const lpToAssetIdPairStorage = new AssetManagerLpToAssetIdPairStorage(ctx)
 
-  const lpToken = await lpToAssetIdPairStorage.asV4401.get(event.assetId)
+  const lpToken = await lpToAssetIdPairStorage.asV4100.get(event.assetId)
 
   if (!event || !lpToken) return
 
@@ -206,11 +211,11 @@ export async function handleTokenWithdrawn(ctx: EventHandlerContext) {
 
 export async function handleTokenTransfer(ctx: EventHandlerContext) {
   const issuedEvent = new AssetsTransferredEvent(ctx, ctx.event)
-  const event = issuedEvent.asV4401
+  const event = issuedEvent.asV4060
 
   const lpToAssetIdPairStorage = new AssetManagerLpToAssetIdPairStorage(ctx)
 
-  const lpToken = await lpToAssetIdPairStorage.asV4401.get(event.assetId)
+  const lpToken = await lpToAssetIdPairStorage.asV4100.get(event.assetId)
 
   if (!event || !lpToken) return
 

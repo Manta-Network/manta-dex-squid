@@ -7,7 +7,7 @@ import {
   ZenlinkProtocolLiquidityPairsStorage,
   ZenlinkProtocolPairStatusesStorage,
 } from '../types/storage'
-import { AssetId } from '../types/v4401'
+import { AssetId } from '../types/v4300'
 import { codec } from '@subsquid/ss58'
 import { config } from '../config'
 import { invert } from 'lodash'
@@ -187,7 +187,7 @@ export async function getPairAssetIdFromAssets(ctx: EventHandlerContext, _assets
   } else {
     const pairsStorage = new ZenlinkProtocolLiquidityPairsStorage(ctx, ctx.block)
     if (!pairsStorage.isExists) return undefined
-    pairAssetId = await pairsStorage.asV4401.get(assets)
+    pairAssetId = await pairsStorage.asV4300.get(assets)
     if (pairAssetId) {
       pairAssetIds.set(assetsId, pairAssetId)
     }
@@ -213,7 +213,7 @@ export async function getPairStatusFromAssets(
   } else {
     const statusStorage = new ZenlinkProtocolPairStatusesStorage(ctx, ctx.block)
     if (!statusStorage.isExists) return [undefined, BigInt(0)]
-    const result = await statusStorage.asV4401.get(assets)
+    const result = await statusStorage.asV4300.get(assets)
     if (result.__kind === 'Trading') {
       pairAccount = codec(config.prefix).encode(result.value.pairAccount)
       pairAccounts.set(assetsId, pairAccount)
@@ -228,11 +228,19 @@ export async function getTokenBalance(ctx: EventHandlerContext, assetId: bigint,
   let result
   if ([BigInt(0), BigInt(1)].includes(assetId)) {
     const systemAccountStorate = new SystemAccountStorage(ctx, ctx.block)
-    result = (await systemAccountStorate.asV4401.get(account)).data
+    if (systemAccountStorate.isV4020) {
+      result = (await systemAccountStorate.asV4020.get(account)).data
+    } else if (systemAccountStorate.isV4600) {
+      result = (await systemAccountStorate.asV4600.get(account)).data
+    }
     return result?.free
   } else {
     const assetsAccountStorage = new AssetsAccountStorage(ctx, ctx.block)
-    result = await assetsAccountStorage.asV4401.get(assetId, account)
+    if (assetsAccountStorage.isV4060) {
+      result = await assetsAccountStorage.asV4060.get(assetId, account)
+    } else if (assetsAccountStorage.isV4600) {
+      result = await assetsAccountStorage.asV4600.get(assetId, account)
+    }
     return result?.balance
   }
 }
@@ -241,10 +249,14 @@ export async function getTotalIssuance(ctx: EventHandlerContext, assetId: AssetI
   let result
   if (assetId.assetType === 0) {
     const balanceIssuanceStorage = new BalancesTotalIssuanceStorage(ctx, ctx.block)
-    result = await balanceIssuanceStorage.asV4401.get()
+    result = await balanceIssuanceStorage.asV4020.get()
   } else {
     const assetsAssetStorage = new AssetsAssetStorage(ctx, ctx.block)
-    result = await assetsAssetStorage.asV4401.get(assetId.assetIndex)
+    if (assetsAssetStorage.isV4060) {
+      result = await assetsAssetStorage.asV4060.get(assetId.assetIndex)
+    } else if (assetsAssetStorage.isV4081) {
+      result = await assetsAssetStorage.asV4081.get(assetId.assetIndex)
+    }
     return result?.supply
   }
 }

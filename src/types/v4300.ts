@@ -6,33 +6,6 @@ export interface AssetId {
     assetIndex: bigint
 }
 
-export interface AssetRegistryMetadata {
-    metadata: AssetStorageMetadata
-    minBalance: bigint
-    isSufficient: boolean
-}
-
-export interface AssetAccount {
-    balance: bigint
-    isFrozen: boolean
-    reason: ExistenceReason
-}
-
-export interface AssetDetails {
-    owner: Uint8Array
-    issuer: Uint8Array
-    admin: Uint8Array
-    freezer: Uint8Array
-    supply: bigint
-    deposit: bigint
-    minBalance: bigint
-    isSufficient: boolean
-    accounts: number
-    sufficients: number
-    approvals: number
-    status: AssetStatus
-}
-
 export interface GaugeInfo {
     who: Uint8Array
     gaugeAmount: bigint
@@ -85,14 +58,6 @@ export interface ShareInfo {
     withdrawList: [number, bigint][]
 }
 
-export interface AccountInfo {
-    nonce: number
-    consumers: number
-    providers: number
-    sufficients: number
-    data: AccountData
-}
-
 export type PairStatus = PairStatus_Trading | PairStatus_Bootstrap | PairStatus_Disable
 
 export interface PairStatus_Trading {
@@ -107,46 +72,6 @@ export interface PairStatus_Bootstrap {
 
 export interface PairStatus_Disable {
     __kind: 'Disable'
-}
-
-export interface AssetStorageMetadata {
-    name: Uint8Array
-    symbol: Uint8Array
-    decimals: number
-    isFrozen: boolean
-}
-
-export type ExistenceReason = ExistenceReason_Consumer | ExistenceReason_Sufficient | ExistenceReason_DepositHeld | ExistenceReason_DepositRefunded
-
-export interface ExistenceReason_Consumer {
-    __kind: 'Consumer'
-}
-
-export interface ExistenceReason_Sufficient {
-    __kind: 'Sufficient'
-}
-
-export interface ExistenceReason_DepositHeld {
-    __kind: 'DepositHeld'
-    value: bigint
-}
-
-export interface ExistenceReason_DepositRefunded {
-    __kind: 'DepositRefunded'
-}
-
-export type AssetStatus = AssetStatus_Live | AssetStatus_Frozen | AssetStatus_Destroying
-
-export interface AssetStatus_Live {
-    __kind: 'Live'
-}
-
-export interface AssetStatus_Frozen {
-    __kind: 'Frozen'
-}
-
-export interface AssetStatus_Destroying {
-    __kind: 'Destroying'
 }
 
 export type GaugeState = GaugeState_Unbond | GaugeState_Bonded
@@ -179,13 +104,6 @@ export interface PoolState_Dead {
 
 export interface PoolState_Retired {
     __kind: 'Retired'
-}
-
-export interface AccountData {
-    free: bigint
-    reserved: bigint
-    miscFrozen: bigint
-    feeFrozen: bigint
 }
 
 export interface PairMetadata {
