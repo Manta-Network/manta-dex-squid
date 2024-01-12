@@ -1,6 +1,6 @@
 {
   "outDir": "../src/types",
-  "specVersions": "https://dev.manta-debug.graphql.nonprod-mantadex.com/graphql",
+  "specVersions": "https://prod.manta-debug.graphql.mantadex.com/graphql",
   "typesBundle": "manta",
   "events": [
     "Assets.Transferred", // Currencies.Transferred
