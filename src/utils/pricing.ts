@@ -13,7 +13,7 @@ export const USDT = '2104-2-9' // USDT
 export const GLMR = '2104-2-10' // Moonbeam
 // export const ACA = '2104-2-11' // Acala
 export const LDOT = '2104-2-15' // LDOT
-export const MANDEX = '2104-2-31' // MANDEX
+export const MANDEX = '2104-2-36' // MANDEX
 // export const WNATIVE_USDC = '2104-2-8796093023744'
 
 
@@ -60,7 +60,7 @@ export async function getEthPriceInUSD(ctx: EventHandlerContext): Promise<BigDec
   // if(price) {
   //   return BigDecimal(price)
   // }
-  return BigDecimal(0)
+  // return BigDecimal(0)
 }
 
 
