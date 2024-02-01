@@ -6,7 +6,7 @@ export const CHAIN_NODE = 'wss://c1.manta.systems'
 export const TOKEN_METADATA_MAP: { [address: string]: TokenBase } = {
   '2104-0-0': { name: 'Manta', symbol: 'MANTA', decimals: 18 },
   '2104-2-8': { name: 'Polkadot', symbol: 'DOT', decimals: 10 },
-  // '2104-2-9': { name: 'Tether USD', symbol: 'USDT', decimals: 6 },
+  '2104-2-9': { name: 'Tether USD', symbol: 'USDT', decimals: 6 },
   '2104-2-10': { name: 'Moonbeam', symbol: 'GLMR', decimals: 18 },
   // '2104-2-12': { name: 'Liquid DOT', symbol: 'LDOT', decimals: 12 },
   // '2104-2-31': { name: 'MANDEX', symbol: 'MANDEX', decimals: 12 },
