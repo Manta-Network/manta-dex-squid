@@ -1,7 +1,7 @@
 import { TokenBase } from './types'
 import { Big as BigDecimal } from 'big.js'
 
-export const CHAIN_NODE = 'wss://c1.manta.systems'
+export const CHAIN_NODE = 'wss://manta.systems'
 
 export const TOKEN_METADATA_MAP: { [address: string]: TokenBase } = {
   '2104-0-0': { name: 'Manta', symbol: 'MANTA', decimals: 18 },
