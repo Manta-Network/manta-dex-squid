@@ -5,7 +5,7 @@ export const config: ProcessorConfig = {
   chainName: 'manta',
   prefix: 'manta',
   dataSource: {
-    archive: 'https://manta.archive.subsquid.io/graphql',
+    archive: 'https://manta-gateway.ops.p0xlabs.systems/graphql',
     chain: CHAIN_NODE,
   },
 }

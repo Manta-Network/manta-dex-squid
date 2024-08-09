@@ -23,11 +23,11 @@ scale:
   dedicated: true
   addons:
     postgres:
-      storage: 100G
+      storage: 16G
       profile: small
   processor:
     profile: small
   api:
     profile: small
     # load-balance three replicas
-    replicas: 2
+    replicas: 1

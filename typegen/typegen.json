@@ -1,6 +1,6 @@
 {
   "outDir": "../src/types",
-  "specVersions": "https://manta.archive.subsquid.io/graphql",
+  "specVersions": "https://manta-explorer.ops.p0xlabs.systems/graphql",
   "typesBundle": "manta",
   "events": [
     "Assets.Transferred", // Currencies.Transferred
